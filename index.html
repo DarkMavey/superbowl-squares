@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Bowl LIX Squares</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+        <img src="images/superbowl.png" alt="Super Bowl LIX" class="sb-logo" />
+        <div class="header-text">
+          <h1>Super Bowl Squares</h1>
+          <p class="header-sub">$10 per square</p>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="signup">Sign Up</button>
+        <button class="tab" data-tab="board">Game Board</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- SIGN UP TAB -->
+    <section id="signup" class="tab-content active">
+      <div class="card" id="signupCard">
+        <h2>Add Participant</h2>
+        <form id="addForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="playerName">Name</label>
+              <input type="text" id="playerName" placeholder="Enter name" required />
+            </div>
+            <div class="form-group">
+              <label for="numSquares"># of Squares</label>
+              <input type="number" id="numSquares" min="1" max="100" value="1" required />
+            </div>
+            <div class="form-group">
+              <label>Total Cost</label>
+              <div class="cost-display" id="costDisplay">$10</div>
+            </div>
+            <div class="form-group form-action">
+              <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Participants</h2>
+        <div class="summary-bar">
+          <span id="squaresSummary">0 / 100 squares sold</span>
+          <span id="potSummary">Total Pot: $0</span>
+        </div>
+        <table id="participantTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th># Squares</th>
+              <th>Total Cost</th>
+              <th class="admin-only"></th>
+            </tr>
+          </thead>
+          <tbody id="participantBody"></tbody>
+        </table>
+        <div class="no-participants" id="noParticipants">No participants yet. Add someone above!</div>
+      </div>
+
+      <div class="card pot-breakdown">
+        <h2>Pot Breakdown</h2>
+        <div class="pot-grid">
+          <div class="pot-item">
+            <span class="pot-quarter">Q1</span>
+            <span class="pot-pct">15%</span>
+            <span class="pot-amount" id="potQ1">$0</span>
+          </div>
+          <div class="pot-item">
+            <span class="pot-quarter">Q2</span>
+            <span class="pot-pct">25%</span>
+            <span class="pot-amount" id="potQ2">$0</span>
+          </div>
+          <div class="pot-item">
+            <span class="pot-quarter">Q3</span>
+            <span class="pot-pct">15%</span>
+            <span class="pot-amount" id="potQ3">$0</span>
+          </div>
+          <div class="pot-item">
+            <span class="pot-quarter">Q4</span>
+            <span class="pot-pct">45%</span>
+            <span class="pot-amount" id="potQ4">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card lock-section admin-only">
+        <button id="lockBoard" class="btn btn-lock" disabled>
+          Lock Board &amp; Randomly Assign Squares
+        </button>
+        <button id="resetBoard" class="btn btn-danger" style="display:none;">
+          Reset Board
+        </button>
+        <p class="lock-note">Once locked, no more sign-ups. Numbers and squares will be randomly assigned.</p>
+      </div>
+    </section>
+
+    <!-- GAME BOARD TAB -->
+    <section id="board" class="tab-content">
+      <div class="card scoreboard">
+        <div class="score-display">
+          <div class="team-score seahawks-side">
+            <img src="images/seahawks.png" alt="Seahawks" class="team-logo" />
+            <span class="team-name seahawks-name">Seahawks</span>
+            <span class="team-points seahawks-points" id="awayScore">0</span>
+          </div>
+          <div class="score-middle">
+            <img src="images/superbowl.png" alt="Super Bowl LIX" class="score-sb-logo" />
+            <span class="quarter-label" id="quarterLabel">Pre-Game</span>
+          </div>
+          <div class="team-score patriots-side">
+            <img src="images/patriots.png" alt="Patriots" class="team-logo" />
+            <span class="team-name patriots-name">Patriots</span>
+            <span class="team-points patriots-points" id="homeScore">0</span>
+          </div>
+        </div>
+        <div class="score-controls admin-only">
+          <label class="toggle-label">
+            <input type="checkbox" id="liveToggle" />
+            Live Score (ESPN)
+          </label>
+          <div class="manual-controls" id="manualControls">
+            <div class="manual-score-group">
+              <label>Seahawks</label>
+              <button class="btn-sm" data-team="away" data-delta="-1">-</button>
+              <span id="manualAwayScore">0</span>
+              <button class="btn-sm" data-team="away" data-delta="1">+</button>
+            </div>
+            <div class="manual-score-group">
+              <label>Patriots</label>
+              <button class="btn-sm" data-team="home" data-delta="-1">-</button>
+              <span id="manualHomeScore">0</span>
+              <button class="btn-sm" data-team="home" data-delta="1">+</button>
+            </div>
+            <div class="manual-score-group">
+              <label>Quarter</label>
+              <select id="manualQuarter">
+                <option value="0">Pre-Game</option>
+                <option value="1">Q1</option>
+                <option value="2">Q2</option>
+                <option value="3">Q3</option>
+                <option value="4">Q4</option>
+                <option value="5">Final</option>
+              </select>
+            </div>
+            <button class="btn btn-award" id="awardQuarterBtn">Award Current Quarter</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card winners-card" id="winnersCard" style="display:none;">
+        <h2>Quarter Winners</h2>
+        <div class="winners-list" id="winnersList"></div>
+      </div>
+
+      <div class="board-container" id="boardContainer">
+        <div class="board-not-ready" id="boardNotReady">
+          <img src="images/superbowl.png" alt="Super Bowl LIX" class="not-ready-logo" />
+          <p>Board is not locked yet.<br>Go to the Sign Up tab to add participants and lock the board.</p>
+        </div>
+        <div class="grid-wrapper" id="gridWrapper" style="display:none;">
+          <div class="grid-team-label grid-label-top">
+            <img src="images/patriots.png" alt="Patriots" class="grid-team-icon" />
+            <span>New England Patriots</span>
+          </div>
+          <div class="grid-team-label grid-label-left">
+            <img src="images/seahawks.png" alt="Seahawks" class="grid-team-icon" />
+            <span>Seattle Seahawks</span>
+          </div>
+          <div class="grid-area" id="gridArea"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Admin Password Modal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal">
+      <h3>Admin Access</h3>
+      <p>Enter the admin password to continue.</p>
+      <input type="password" id="adminPasswordInput" placeholder="Password" autocomplete="off" />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="adminCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="adminConfirmBtn">Confirm</button>
+      </div>
+      <p class="modal-error" id="adminError"></p>
+    </div>
+  </div>
+
+  <!-- Venmo Payment Popup -->
+  <div class="modal-overlay" id="venmoModal">
+    <div class="modal venmo-modal">
+      <div class="venmo-check">&#10003;</div>
+      <h3>You're In!</h3>
+      <p class="venmo-details">
+        <strong id="venmoPlayerName"></strong> &mdash;
+        <span id="venmoSquareCount"></span> square(s) &mdash;
+        <strong id="venmoTotal"></strong>
+      </p>
+      <p class="venmo-cta">Please send payment via Venmo:</p>
+      <a href="https://venmo.com/MarkDavey" target="_blank" rel="noopener" class="venmo-link">
+        venmo.com/MarkDavey
+      </a>
+      <button class="btn btn-primary venmo-dismiss" id="venmoDismissBtn">Got it!</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (v9 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
