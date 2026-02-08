@@ -162,9 +162,7 @@ main {
 }
 
 /* =================== ADMIN-ONLY =================== */
-.admin-only {
-  display: none;
-}
+/* Visibility controlled by JS in updateAdminUI() */
 
 /* =================== FORM =================== */
 label {

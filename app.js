@@ -116,7 +116,11 @@ document.getElementById('adminLoginLink').addEventListener('click', async (e) =>
 
 function updateAdminUI() {
   document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = isAdmin ? '' : 'none';
+    if (isAdmin) {
+      el.style.display = el.tagName === 'TD' ? 'table-cell' : 'block';
+    } else {
+      el.style.display = 'none';
+    }
   });
   // Sign-up form: hidden when locked OR when all 100 squares are taken
   const signupCard = document.getElementById('signupCard');
