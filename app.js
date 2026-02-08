@@ -305,8 +305,14 @@ document.getElementById('resetBoard').addEventListener('click', async () => {
   const granted = await requireAdmin();
   if (!granted) return;
 
-  if (!confirm('Are you sure you want to reset the entire board? This cannot be undone.')) return;
-  gameRef.set(defaultState());
+  if (!confirm('Are you sure you want to reset the board layout? Participants will be kept.')) return;
+  gameRef.update({
+    grid: null,
+    colNumbers: null,
+    rowNumbers: null,
+    isLocked: false,
+    quarterWinners: {}
+  });
 });
 
 // =================== BOARD TAB ===================
