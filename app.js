@@ -107,14 +107,22 @@ adminPasswordInput.addEventListener('keydown', (e) => {
   }
 });
 
+// Admin login link in header
+document.getElementById('adminLoginLink').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const granted = await requireAdmin();
+  if (granted) updateAdminUI();
+});
+
 function updateAdminUI() {
   document.querySelectorAll('.admin-only').forEach(el => {
     el.style.display = isAdmin ? '' : 'none';
   });
-  // Sign-up form: visible to everyone when board is not locked, hidden when locked
+  // Sign-up form: hidden when locked OR when all 100 squares are taken
   const signupCard = document.getElementById('signupCard');
   if (signupCard) {
-    signupCard.style.display = state.isLocked ? 'none' : '';
+    const totalUsed = (state.participants || []).reduce((s, p) => s + p.squares, 0);
+    signupCard.style.display = (state.isLocked || totalUsed >= 100) ? 'none' : '';
   }
   // Live toggle state
   const liveToggle = document.getElementById('liveToggle');
@@ -225,12 +233,6 @@ function renderParticipants() {
   if (remaining > 0) {
     numInput.max = remaining;
     if (parseInt(numInput.value) > remaining) numInput.value = remaining;
-  }
-
-  // Hide sign-up form when all squares are taken (even if board isn't locked)
-  const signupCard = document.getElementById('signupCard');
-  if (signupCard && remaining <= 0 && !state.isLocked) {
-    signupCard.style.display = 'none';
   }
 
   document.getElementById('squaresSummary').textContent = `${totalSquares} / 100 squares sold`;

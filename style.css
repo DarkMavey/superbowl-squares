@@ -92,6 +92,14 @@ header {
   font-weight: 500;
 }
 
+.admin-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.5;
+  font-size: 0.7rem;
+}
+.admin-link:hover { opacity: 1; }
+
 /* Tabs */
 .tabs {
   display: flex;
