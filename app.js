@@ -1,5 +1,5 @@
 // =================== STATE ===================
-const SQUARE_COST = 10;
+const SQUARE_COST = 5;
 const QUARTER_PCTS = { 1: 0.15, 2: 0.25, 3: 0.15, 4: 0.45 };
 const QUARTER_LABELS = {
   0: 'Pre-Game', 1: 'Q1', 2: 'Q2', 3: 'Q3', 4: 'Q4', 5: 'Final'
@@ -28,11 +28,24 @@ function defaultState() {
 }
 
 // =================== FIREBASE REAL-TIME LISTENER ===================
+let hasMigrated = false;
 gameRef.on('value', (snapshot) => {
   const val = snapshot.val();
   state = { ...defaultState(), ...val };
   // Ensure quarterWinners is always an object
   if (!state.quarterWinners) state.quarterWinners = {};
+
+  // One-time migration: double squares for $10→$5 price change
+  if (!hasMigrated && !state.migratedTo5 && state.participants && state.participants.length > 0) {
+    hasMigrated = true;
+    const migrated = state.participants.map(p => {
+      if (p.name === 'Mark Davey') return { ...p, squares: 10 };
+      return { ...p, squares: p.squares * 2 };
+    });
+    gameRef.update({ participants: migrated, migratedTo5: true });
+    return; // The update will trigger another on('value') callback
+  }
+
   renderParticipants();
   renderBoard();
   updateAdminUI();
@@ -167,7 +180,7 @@ document.getElementById('addForm').addEventListener('submit', (e) => {
 
   document.getElementById('playerName').value = '';
   numSquaresInput.value = 1;
-  costDisplay.textContent = '$10';
+  costDisplay.textContent = '$5';
   document.getElementById('playerName').focus();
 });
 
@@ -205,6 +218,20 @@ function renderParticipants() {
 
   const totalSquares = participants.reduce((s, p) => s + p.squares, 0);
   const totalPot = totalSquares * SQUARE_COST;
+  const remaining = 100 - totalSquares;
+
+  // Cap the numSquares input to remaining availability
+  const numInput = document.getElementById('numSquares');
+  if (remaining > 0) {
+    numInput.max = remaining;
+    if (parseInt(numInput.value) > remaining) numInput.value = remaining;
+  }
+
+  // Hide sign-up form when all squares are taken (even if board isn't locked)
+  const signupCard = document.getElementById('signupCard');
+  if (signupCard && remaining <= 0 && !state.isLocked) {
+    signupCard.style.display = 'none';
+  }
 
   document.getElementById('squaresSummary').textContent = `${totalSquares} / 100 squares sold`;
   document.getElementById('potSummary').textContent = `Total Pot: $${totalPot}`;
