@@ -277,13 +277,13 @@ document.getElementById('lockBoard').addEventListener('click', async () => {
   });
   while (pool.length < 100) pool.push('OPEN');
 
-  shuffle(pool);
+  const shuffledPool = shuffle(pool);
 
   const grid = [];
   for (let r = 0; r < 10; r++) {
     grid[r] = [];
     for (let c = 0; c < 10; c++) {
-      grid[r][c] = pool[r * 10 + c];
+      grid[r][c] = shuffledPool[r * 10 + c];
     }
   }
 
